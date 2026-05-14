@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SectionsPanel from "@/components/editor/SectionsPanel";
 import PreviewCanvas from "@/components/editor/PreviewCanvas";
@@ -14,13 +14,16 @@ import {
   useEditorTemporal,
   type SaveState,
 } from "@/lib/editor/store";
-import { defaultSections } from "@/types/resume";
+import { defaultSections, type TemplateId } from "@/types/resume";
 import { sampleResume } from "@/data/sampleResume";
+
+const VALID_TEMPLATES: TemplateId[] = ["classic", "modern", "minimal"];
 
 export default function EditorPage() {
   const params = useParams<{ id?: string[] }>();
   const resumeId = params?.id?.[0] ?? null;
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const hydrate = useEditorStore((s) => s.hydrate);
   const title = useEditorStore((s) => s.title);
@@ -52,10 +55,14 @@ export default function EditorPage() {
         }
       } else {
         // 新建模式：填充前端开发示例数据，方便用户直接看到效果与编辑
+        // 支持通过 ?template=classic|modern|minimal 指定起始模板
+        const queryTpl = searchParams.get("template") as TemplateId | null;
+        const startTpl: TemplateId =
+          queryTpl && VALID_TEMPLATES.includes(queryTpl) ? queryTpl : "classic";
         hydrate({
           id: null,
           title: "前端工程师 - 张三",
-          templateId: "classic",
+          templateId: startTpl,
           content: {
             ...sampleResume,
             sections: defaultSections,
@@ -68,7 +75,7 @@ export default function EditorPage() {
     return () => {
       mounted = false;
     };
-  }, [resumeId, hydrate]);
+  }, [resumeId, hydrate, searchParams]);
 
   // 自动保存（加载完成后启用）
   useAutoSave(!loading);

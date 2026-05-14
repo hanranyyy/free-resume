@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import TemplatePreview from "@/components/templates/TemplatePreview";
+import { templateMetaList } from "@/components/templates";
 
 function EditIcon() {
   return (
@@ -197,34 +199,26 @@ export default function HomePage() {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">精选热门模板</h2>
               <p className="text-gray-500 text-sm md:text-[15px]">针对不同行业和岗位精心打磨，一键套用</p>
             </div>
-            <button className="self-start sm:self-auto text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
+            <Link href="/templates" className="self-start sm:self-auto text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
               查看全部 <ArrowRightIcon />
-            </button>
+            </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="group cursor-pointer">
-                <div className="aspect-[1/1.4] rounded-lg overflow-hidden bg-white shadow-sm group-hover:shadow-xl transition-all relative">
+            {templateMetaList.map((meta) => (
+              <Link key={meta.id} href={`/editor?template=${meta.id}`} className="group cursor-pointer block">
+                <div className="aspect-[1/1.4] rounded-lg overflow-hidden bg-white shadow-sm group-hover:shadow-xl transition-all relative border border-gray-100">
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
-                    <button className="px-6 py-2 bg-blue-600 text-white rounded-full text-[14px] font-medium">
+                    <span className="px-6 py-2 bg-blue-600 text-white rounded-full text-[14px] font-medium">
                       使用模板
-                    </button>
+                    </span>
                   </div>
-                  <Image
-                    src={`https://l-api.jd.com/relay-aigc/design/image/prompt/A highly professional A4 size resume template design preview clean minimalist modern UI style white background?width=512&height=720&seed=${item}`}
-                    alt="模板封面"
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                    unoptimized
-                  />
+                  <TemplatePreview templateId={meta.id} />
                 </div>
                 <div className="mt-4 text-center">
-                  <h4 className="font-semibold text-gray-800">
-                    {["互联网产品经理", "通用应届生", "高级开发工程师"][item - 1]}
-                  </h4>
+                  <h4 className="font-semibold text-gray-800">{meta.name}</h4>
+                  <p className="mt-1 text-[12px] text-gray-500 line-clamp-1">{meta.description}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

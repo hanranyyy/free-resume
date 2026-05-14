@@ -1,8 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import TemplatePreview from "@/components/templates/TemplatePreview";
+import { templateMetaList } from "@/components/templates";
+import type { TemplateId } from "@/types/resume";
 
 type CategoryId =
   | "all"
@@ -29,49 +31,57 @@ const styleFilters = [
   { id: "creative", label: "创意图形" },
 ];
 
-type Template = {
-  id: number;
-  title: string;
-  category: CategoryId;
+/**
+ * 模板列表项扩展信息：与 `templateMetaList` 中的真实模板 1:1 对应，
+ * 不再使用 mock 占位图。新增 category / 使用人数 / 标签等元信息用于筛选展示。
+ */
+interface TemplateCard {
+  id: TemplateId;
+  name: string;
+  description: string;
+  category: Exclude<CategoryId, "all">;
+  style: "single" | "double" | "creative";
   usage: number;
   isNew: boolean;
   isPro: boolean;
   createdAt: number;
+}
+
+const templateExtras: Record<TemplateId, Omit<TemplateCard, "id" | "name" | "description">> = {
+  classic: {
+    category: "it",
+    style: "single",
+    usage: 4280,
+    isNew: false,
+    isPro: false,
+    createdAt: 1_700_000_000,
+  },
+  modern: {
+    category: "creative",
+    style: "double",
+    usage: 3120,
+    isNew: false,
+    isPro: true,
+    createdAt: 1_700_500_000,
+  },
+  minimal: {
+    category: "entry",
+    style: "single",
+    usage: 5670,
+    isNew: true,
+    isPro: false,
+    createdAt: 1_701_000_000,
+  },
 };
 
-const titlePool = [
-  "极简通用模板",
-  "互联网大厂专用",
-  "产品经理高端版",
-  "应届生优选",
-  "财务分析师专业版",
-  "设计师创意流",
-];
-
-const categoryPool: CategoryId[] = [
-  "it",
-  "it",
-  "it",
-  "entry",
-  "finance",
-  "creative",
-  "education",
-  "it",
-  "finance",
-  "creative",
-  "entry",
-  "education",
-];
-
-const templates: Template[] = Array.from({ length: 12 }).map((_, i) => ({
-  id: i,
-  title: titlePool[i % titlePool.length],
-  category: categoryPool[i] ?? "all",
-  usage: 1200 + i * 340,
-  isNew: i === 1 || i === 4 || i === 9,
-  isPro: i === 2 || i === 5 || i === 11,
-  createdAt: 1_700_000_000 - i * 86_400,
-}));
+function buildTemplateCards(): TemplateCard[] {
+  return templateMetaList.map((meta) => ({
+    id: meta.id,
+    name: meta.name,
+    description: meta.description,
+    ...templateExtras[meta.id],
+  }));
+}
 
 function HeartIcon() {
   return (
@@ -91,61 +101,32 @@ function HeartIcon() {
   );
 }
 
-function ChevronLeftIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="w-3 h-3"
-      aria-hidden="true"
-    >
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="w-3 h-3"
-      aria-hidden="true"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  );
-}
-
 export default function TemplateCenterPage() {
   const [activeCategory, setActiveCategory] = useState<CategoryId>("all");
   const [activeSort, setActiveSort] = useState<SortId>("popular");
   const [activeStyles, setActiveStyles] = useState<string[]>([]);
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [favorites, setFavorites] = useState<Set<TemplateId>>(new Set());
+
+  const allCards = useMemo(() => buildTemplateCards(), []);
 
   const filteredTemplates = useMemo(() => {
-    const list =
-      activeCategory === "all"
-        ? [...templates]
-        : templates.filter((t) => t.category === activeCategory);
+    let list = allCards;
 
+    if (activeCategory !== "all") {
+      list = list.filter((t) => t.category === activeCategory);
+    }
+    if (activeStyles.length > 0) {
+      list = list.filter((t) => activeStyles.includes(t.style));
+    }
+
+    list = [...list];
     if (activeSort === "popular") {
       list.sort((a, b) => b.usage - a.usage);
     } else {
       list.sort((a, b) => b.createdAt - a.createdAt);
     }
     return list;
-  }, [activeCategory, activeSort]);
+  }, [allCards, activeCategory, activeSort, activeStyles]);
 
   const toggleStyle = (id: string) => {
     setActiveStyles((prev) =>
@@ -153,7 +134,7 @@ export default function TemplateCenterPage() {
     );
   };
 
-  const toggleFavorite = (id: number) => {
+  const toggleFavorite = (id: TemplateId) => {
     setFavorites((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -208,7 +189,7 @@ export default function TemplateCenterPage() {
             模板中心
           </h1>
           <p className="text-gray-500 text-[15px]">
-            128+ 款精美简历模板，覆盖各行各业，助你一键打造高品质简历
+            精挑细选的简历模板，所见即所得，点击立即使用进入编辑器
           </p>
         </div>
       </section>
@@ -300,7 +281,7 @@ export default function TemplateCenterPage() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredTemplates.map((tpl) => {
               const fav = favorites.has(tpl.id);
               return (
@@ -323,7 +304,7 @@ export default function TemplateCenterPage() {
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 z-20">
                       <Link
-                        href="/editor"
+                        href={`/editor?template=${tpl.id}`}
                         className="w-32 py-2 bg-blue-600 text-white rounded-full text-[14px] font-medium hover:bg-blue-700 transition-colors text-center"
                       >
                         立即使用
@@ -336,31 +317,24 @@ export default function TemplateCenterPage() {
                       </button>
                     </div>
 
-                    <Image
-                      src={`https://l-api.jd.com/relay-aigc/design/image/prompt/A highly professional A4 size resume template design preview clean minimalist modern UI style white background?width=512&height=720&seed=${
-                        tpl.id + 10
-                      }`}
-                      alt="模板封面"
-                      fill
-                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      unoptimized
-                    />
+                    {/* Real preview */}
+                    <TemplatePreview templateId={tpl.id} />
                   </div>
 
                   <div className="px-1">
                     <h3 className="font-medium text-gray-800 text-[15px] mb-1 truncate">
-                      {tpl.title}
+                      {tpl.name}
                     </h3>
+                    <p className="text-[12px] text-gray-500 mb-2 line-clamp-1">
+                      {tpl.description}
+                    </p>
                     <div className="flex items-center justify-between text-[12px] text-gray-500">
                       <span>{tpl.usage.toLocaleString()} 人使用</span>
                       <button
                         type="button"
                         onClick={() => toggleFavorite(tpl.id)}
                         className={`transition-colors ${
-                          fav
-                            ? "text-rose-500"
-                            : "hover:text-rose-500"
+                          fav ? "text-rose-500" : "hover:text-rose-500"
                         }`}
                         aria-label="收藏"
                       >
@@ -373,52 +347,11 @@ export default function TemplateCenterPage() {
             })}
           </div>
 
-          {/* Pagination */}
-          <div className="mt-12 flex justify-center">
-            <div className="flex items-center gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-100">
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-800 rounded"
-                aria-label="上一页"
-              >
-                <ChevronLeftIcon />
-              </button>
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-white bg-blue-600 rounded font-medium text-[14px]"
-              >
-                1
-              </button>
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-50 rounded font-medium text-[14px]"
-              >
-                2
-              </button>
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-50 rounded font-medium text-[14px]"
-              >
-                3
-              </button>
-              <span className="w-8 h-8 flex items-center justify-center text-gray-400">
-                ...
-              </span>
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-50 rounded font-medium text-[14px]"
-              >
-                10
-              </button>
-              <button
-                type="button"
-                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-800 rounded"
-                aria-label="下一页"
-              >
-                <ChevronRightIcon />
-              </button>
+          {filteredTemplates.length === 0 && (
+            <div className="mt-12 text-center text-gray-500 text-sm">
+              暂无符合条件的模板，调整筛选条件试试。
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>

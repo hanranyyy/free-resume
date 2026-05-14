@@ -12,7 +12,7 @@ export const templateRegistry = {
 export const templateMetaList: TemplateMeta[] = [
   {
     id: "classic",
-    name: "经典商务",
+    name: "经典单栏",
     description: "蓝色色块标题 + 圆形头像，紧凑信息密度，适合校招/社招通用投递",
     tags: ["互联网", "正式", "通用"],
   },
@@ -24,7 +24,7 @@ export const templateMetaList: TemplateMeta[] = [
   },
   {
     id: "minimal",
-    name: "极简中文",
+    name: "极简单栏",
     description: "非衬线大姓名 + 头像 + 信息密度高，国内中文岗位投递常用",
     tags: ["中文", "通用", "极简"],
   },
