@@ -48,6 +48,7 @@ export async function POST(request: Request) {
         title: body.title ?? "未命名简历",
         template_id: body.template_id ?? "classic",
         content: body.content,
+        settings: body.settings ?? {},
       })
       .select()
       .single();

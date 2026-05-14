@@ -48,6 +48,7 @@ export async function PATCH(request: Request, { params }: Params) {
     if (body.title !== undefined) updateData.title = body.title;
     if (body.template_id !== undefined) updateData.template_id = body.template_id;
     if (body.content !== undefined) updateData.content = body.content;
+    if (body.settings !== undefined) updateData.settings = body.settings;
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "没有可更新的字段" }, { status: 400 });

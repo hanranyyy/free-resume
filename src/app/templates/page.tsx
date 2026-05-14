@@ -235,8 +235,16 @@ export default function TemplatesPage() {
           </div>
         </aside>
 
-        <main className="bg-white p-4 sm:p-8 rounded-xl shadow-sm">
-          <div className="max-w-[800px] mx-auto print:max-w-none print:p-0">
+        <main className="bg-gray-100 p-4 sm:p-8 rounded-xl shadow-sm overflow-auto">
+          <div
+            className="mx-auto bg-white shadow-md overflow-hidden print:shadow-none"
+            style={{
+              width: "210mm",
+              minHeight: "297mm",
+              ["--resume-padding" as string]: "16mm",
+              ["--resume-primary" as string]: "#2563eb",
+            }}
+          >
             <ActiveTemplate resume={content} />
           </div>
         </main>

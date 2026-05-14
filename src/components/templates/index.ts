@@ -13,7 +13,7 @@ export const templateMetaList: TemplateMeta[] = [
   {
     id: "classic",
     name: "经典商务",
-    description: "蓝色主色调，传统排版，适合互联网/金融/咨询岗位投递",
+    description: "蓝色色块标题 + 圆形头像，紧凑信息密度，适合校招/社招通用投递",
     tags: ["互联网", "正式", "通用"],
   },
   {
@@ -24,9 +24,9 @@ export const templateMetaList: TemplateMeta[] = [
   },
   {
     id: "minimal",
-    name: "极简学术",
-    description: "黑白配色，衬线字体，适合学术/科研/海外申请",
-    tags: ["学术", "海外", "极简"],
+    name: "极简中文",
+    description: "非衬线大姓名 + 头像 + 信息密度高，国内中文岗位投递常用",
+    tags: ["中文", "通用", "极简"],
   },
 ];
 

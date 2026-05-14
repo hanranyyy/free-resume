@@ -21,7 +21,7 @@ body {
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
-/* 打印 / 导出 PDF：仅保留简历区域 */
+/* 打印 / 导出 PDF：仅保留 #resume-preview 区域 */
 @media print {
   @page {
     size: A4;
@@ -30,16 +30,21 @@ body {
   body * {
     visibility: hidden;
   }
-  main, main * {
+  #resume-preview,
+  #resume-preview * {
     visibility: visible;
   }
-  main {
+  #resume-preview {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    width: 210mm;
+    min-height: 297mm;
+    box-shadow: none !important;
+    page-break-after: always;
   }
-  header, aside, nav, footer {
-    display: none !important;
+  /* 兜底：旧模板页的打印区域 */
+  main.print-area, main.print-area * {
+    visibility: visible;
   }
 }
