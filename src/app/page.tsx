@@ -75,7 +75,7 @@ export default function HomePage() {
             <div className="hidden md:flex gap-6 text-[15px] font-medium text-gray-600">
               <span className="text-blue-600 cursor-pointer">首页</span>
               <Link href="/templates" className="hover:text-blue-600 cursor-pointer transition-colors">模板中心</Link>
-              <span className="hover:text-blue-600 cursor-pointer transition-colors">我的简历</span>
+              <Link href="/me" className="hover:text-blue-600 cursor-pointer transition-colors">我的简历</Link>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-4">
@@ -97,9 +97,9 @@ export default function HomePage() {
         {menuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
             <div className="flex flex-col gap-3 text-[15px] font-medium text-gray-700">
-              <span className="text-blue-600">首页</span>
-              <span>模板中心</span>
-              <span>我的简历</span>
+              <Link href="/" className="text-blue-600">首页</Link>
+              <Link href="/templates">模板中心</Link>
+              <Link href="/me">我的简历</Link>
             </div>
             <div className="flex gap-3 pt-3 border-t border-gray-100">
               <button className="flex-1 py-2 text-[14px] text-gray-600 border border-gray-200 rounded-full">登录</button>

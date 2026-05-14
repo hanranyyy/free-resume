@@ -93,7 +93,7 @@ export default function EditorPage() {
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <Link href="/templates" className="text-sm text-blue-600 shrink-0">
+          <Link href="/me" className="text-sm text-blue-600 shrink-0">
             ← 返回
           </Link>
           <input
